@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#3156d9">
+  <meta name="description" content="QueueEase - smart service discovery, digital queue and appointment management.">
+  <title>QueueEase | Smart Queue & Appointment Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="intro" class="intro" role="dialog" aria-label="Welcome to QueueEase">
+    <div><span class="brand-mark">Q</span><h1>QueueEase</h1><p>Skip the line, not the service.</p>
+    <div class="intro-line" aria-hidden="true"><span class="intro-token" style="--d:.3s">AE021</span><span class="intro-token" style="--d:.6s">AE022</span><span class="intro-token" style="--d:.9s">AE023</span><span class="intro-token you" style="--d:1.3s">AE024 · your turn</span></div>
+    <div class="intro-caption">Join from your phone. We tell you when it is your turn.</div></div>
+    <button id="skipIntro" class="intro-skip" type="button">Skip intro →</button>
+  </div>
+
+  <!-- ============ LOGIN / REGISTER (Customer, Staff, Admin) ============ -->
+  <div id="authScreen" class="auth-screen">
+    <section class="auth-aside">
+      <div class="brand">
+        <span class="brand-mark">Q</span>
+        <span><strong>QueueEase</strong></span>
+      </div>
+      <h2>Your time matters.<br><span>Not the waiting line.</span></h2>
+      <ul class="auth-points">
+        <li><span class="point-icon">◉</span><div><strong>Find the right centre</strong><small>Pick a service and see which nearby centres offer it</small></div></li>
+        <li><span class="point-icon">▤</span><div><strong>Know your wait</strong><small>Check the queue for your exact service before you leave home</small></div></li>
+        <li><span class="point-icon">❖</span><div><strong>Token or appointment</strong><small>Join a walk-in queue or book a time slot, then track it</small></div></li>
+      </ul>
+    </section>
+
+    <section class="auth-main">
+      <div class="auth-card">
+        <div class="role-tabs" role="tablist" aria-label="Sign in as">
+          <button type="button" class="role-tab active" data-auth-role="citizen" role="tab">Customer</button>
+          <button type="button" class="role-tab" data-auth-role="staff" role="tab">Staff</button>
+          <button type="button" class="role-tab" data-auth-role="admin" role="tab">Admin</button>
+        </div>
+        <h2 id="authTitle">Customer login</h2>
+
+        <form id="authForm" novalidate>
+          <div class="field-group hidden" data-auth-mode="register">
+            <label for="authName">Full name</label>
+            <input id="authName" type="text" maxlength="50" placeholder="e.g. Anita Sharma" autocomplete="name">
+          </div>
+          <div class="field-group">
+            <label for="authUsername">Username</label>
+            <input id="authUsername" type="text" maxlength="20" placeholder="e.g. anita_s" autocomplete="username">
+          </div>
+          <div class="field-group">
+            <label for="authPassword">Password</label>
+            <input id="authPassword" type="password" maxlength="64" placeholder="At least 6 characters" autocomplete="current-password">
+          </div>
+          <div class="field-group hidden" data-auth-mode="register">
+            <label for="authConfirm">Confirm password</label>
+            <input id="authConfirm" type="password" maxlength="64" placeholder="Re-enter password" autocomplete="new-password">
+          </div>
+          <div class="field-group hidden" id="staffCodeGroup">
+            <label for="authStaffCode">Staff access code</label>
+            <input id="authStaffCode" type="text" maxlength="30" placeholder="Demo code: QUEUEEASE-STAFF" autocomplete="off">
+          </div>
+          <button class="btn btn-primary btn-full" id="authSubmit" type="submit">Log in <span>→</span></button>
+          <div id="authMessage" class="form-message" role="status" aria-live="polite"></div>
+        </form>
+
+        <p class="auth-switch"><span id="authSwitchText">New to QueueEase?</span> <button type="button" id="authSwitchBtn" class="text-button">Create an account</button></p>
+        <button type="button" id="quickLoginBtn" class="btn btn-secondary btn-full quick-login">Quick login</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ MAIN APPLICATION ============ -->
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <a class="brand" href="#/overview" aria-label="QueueEase home">
+        <span class="brand-mark">Q</span>
+        <span><strong>QueueEase</strong></span>
+      </a>
+      <nav class="side-nav" aria-label="Main">
+        <button class="nav-item" data-view="overview" type="button"><span class="nav-icon">◫</span><span class="nav-label">Overview</span></button>
+        <button class="nav-item" data-view="services" data-roles="citizen" type="button"><span class="nav-icon">⌕</span><span class="nav-label">Find a service</span></button>
+        <button class="nav-item" data-view="activity" data-roles="citizen" type="button"><span class="nav-icon">▦</span><span class="nav-label">My activity</span><span class="nav-count hidden" id="navActivityCount">0</span></button>
+        <button class="nav-item" data-view="staff" data-roles="staff admin" type="button"><span class="nav-icon">▤</span><span class="nav-label">Staff console</span></button>
+        <button class="nav-item" data-view="admin" data-roles="admin" type="button"><span class="nav-icon">⚙</span><span class="nav-label">Administration</span></button>
+        <button class="nav-item" data-view="display" type="button"><span class="nav-icon">▣</span><span class="nav-label">Public display</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="user-card">
+          <div class="avatar" id="sideAvatar">JS</div>
+          <div><strong id="userName">User</strong><small id="userRole">Customer</small></div>
+        </div>
+        <button id="resetQueues" class="reset-link" data-roles="admin" type="button">↻ Reset demo data</button>
+        <p class="proto-note">Prototype: sample data, stored in this browser only.</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="top-left">
+          <button class="icon-btn" id="collapseBtn" aria-label="Collapse or expand the menu" type="button">☰</button>
+          <div><div class="crumbs" id="crumbs">QueueEase</div><h1 id="pageTitle">Overview</h1><p class="top-subtitle" id="pageSub"></p></div>
+        </div>
+        <div class="top-actions">
+          <button class="search-btn" id="openPalette" type="button" aria-label="Search or jump to a page"><b aria-hidden="true">⌕</b><span>Search or jump to…</span><kbd>Ctrl K</kbd></button>
+          <div class="notif-wrap"><button class="icon-btn" id="bellBtn" type="button" aria-label="Notifications" aria-expanded="false">🔔<span class="badge hidden" id="bellBadge">0</span></button><div class="notif-panel hidden" id="notifPanel" role="dialog" aria-label="Notifications"></div></div>
+          <span class="clock" id="clock"></span>
+          <span class="role-badge" id="roleBadge">CUSTOMER</span>
+          <div class="avatar" id="topAvatar" title="Signed in user">JS</div>
+          <button class="btn btn-secondary btn-small" id="logoutBtn" type="button">Log out</button>
+        </div>
+      </header>
+
+      <div class="sim-banner hidden" id="simBanner" role="status"><span>● Live demo running: new customers and desk activity are simulated.</span><button class="text-button" type="button" data-action="toggle-sim">Stop demo</button></div>
+
+      <!-- Overview -->
+      <section class="view" id="view-overview">
+        <section id="roleHero" class="role-hero" aria-live="polite"></section>
+        <div id="overviewBody"></div>
+      </section>
+
+      <!-- Customer: service discovery (steps 1 and 2) -->
+      <section class="view" id="view-services">
+        <div id="journeyBar-services"></div>
+        <div id="servicesBody"></div>
+      </section>
+
+      <!-- Customer: centre discovery (step 3) -->
+      <section class="view" id="view-centres">
+        <div id="journeyBar-centres"></div>
+        <div id="centresBody"></div>
+      </section>
+
+      <!-- Customer: centre details and options (steps 4 and 5) -->
+      <section class="view" id="view-centre">
+        <div id="journeyBar-centre"></div>
+        <div id="centreBody"></div>
+      </section>
+
+      <!-- Customer: tracking (step 6) -->
+      <section class="view" id="view-activity">
+        <div id="activityBody"></div>
+      </section>
+
+      <!-- Staff -->
+      <section class="view" id="view-staff">
+        <div id="staffBody"></div>
+      </section>
+
+      <!-- Admin -->
+      <section class="view" id="view-admin">
+        <div id="adminBody"></div>
+      </section>
+
+      <!-- Public display -->
+      <section class="view" id="view-display">
+        <div id="displayBody"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-box" id="modalBox"></div></div>
+  <div id="palette" class="palette hidden" role="dialog" aria-label="Command palette"><div class="palette-box"><input id="paletteInput" placeholder="Type a page, service or action…" autocomplete="off" aria-label="Search pages and actions"><div id="paletteList" role="listbox"></div></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
